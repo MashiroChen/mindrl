@@ -254,7 +254,7 @@ class PythonEnvironment(Environment):
         Args:
             seed_value (int), The value that is used to set
 
-        Retunrs:
+        Returns:
             Success (np.bool\_), Whether successfully set the seed.
         """
         return self._set_seed(seed_value)
