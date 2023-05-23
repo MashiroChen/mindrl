@@ -111,6 +111,7 @@ class DeepMindControlEnvironment(PythonEnvironment):
 
         self._env_queue.put(None)
         self._env.close()
+        self._env_queue.put(None)
         return True
 
     def _step(self, action):
