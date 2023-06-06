@@ -61,6 +61,7 @@ class DQNPolicy:
             params["epsi_low"],
             params["decay"],
             params["action_space_dim"],
+            shape=(1, 1),
         )
         self.evaluate_policy = GreedyPolicy(self.policy_network)
 
@@ -146,7 +147,7 @@ class DQNLearner(Learner):
         def construct(self, x, a0, label):
             """constructor for Loss Cell"""
             out = self._backbone(x)
-            out = self.gather(out, 1, a0)
+            out = self.gather(out, 2, a0)
             loss = self._loss_fn(out, label)
             return loss
 
@@ -176,8 +177,8 @@ class DQNLearner(Learner):
         """Model update"""
         s0, a0, r1, s1 = experience
         next_state_values = self.target_network(s1)
-        next_state_values = next_state_values.max(axis=1)
-        r1 = self.reshape(r1, (-1,))
+        next_state_values = next_state_values.max(axis=-1)
+        # r1 = self.reshape(r1, (-1,))
 
         y_true = r1 + self.gamma * next_state_values
 
@@ -185,7 +186,7 @@ class DQNLearner(Learner):
         one = self.ones_like(r1)
         y_true = self.select(r1 == -one, one, y_true)
         y_true = self.expand_dims(y_true, 1)
-
+        a0 = self.expand_dims(a0, 1)
         success = self.policy_network_train(s0, a0, y_true)
         return success
 
