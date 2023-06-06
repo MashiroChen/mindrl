@@ -162,6 +162,7 @@ class MSRL(nn.Cell):
 
     # pylint: disable=W0613
     @staticmethod
+    # TODO: get global flag to check whether use support remote env
     def create_environments(
         config,
         env_type,
@@ -189,24 +190,33 @@ class MSRL(nn.Cell):
                 "Please provide deploy_config when support_auto_parallel is True."
             )
         env_config = config[env_type]
+        wrappers = env_config.get("wrappers")
+        env_split = 1
+        if support_remote_env:
+            config[env_type]["params"]["_RemoteEnvWrapper"] = {
+                "deploy_config": deploy_config
+            }
+            wrappers.insert(0, _RemoteEnvWrapper)
+            env_split = deploy_config.get("worker_num", 2) - 1
+
         num_env = env_config.get("number")
         num_parallel = (
             0
             if env_config.get("num_parallel") is None
             else env_config.get("num_parallel")
         )
-        wrappers = env_config.get("wrappers")
+        if (num_env % env_split != 0) or (num_parallel % env_split != 0):
+            raise ValueError(
+                "The number of environment and num_parallel should be divisible by the worker num."
+            )
+        else:
+            num_env = num_env // env_split
+            num_parallel = num_parallel // env_split
+
         env_creator = partial(
             config[env_type]["type"],
             config[env_type]["params"][config[env_type]["type"].__name__],
         )
-
-        if support_remote_env:
-            config[env_type]["params"]["_RemoteEnvWrapper"] = {
-                "deploy_config": deploy_config
-            }
-            wrappers.insert(0, _RemoteEnvWrapper)
-
         if need_batched:
             wrappers.insert(wrappers.index(PyFuncWrapper) + 1, BatchWrapper)
         if wrappers is not None:
