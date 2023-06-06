@@ -26,6 +26,10 @@ class _RemoteEnvWrapper(Wrapper):
     def num_environment(self) -> int:
         return self.environment.num_environment * (self._worker_num - 1)
 
+    @property
+    def num_env_per_worker(self) -> int:
+        return self.environment.num_environment
+
     def _reset(self):
         return self.environment.reset()
 
