@@ -103,7 +103,6 @@ class DQNActor(Actor):
             # Fill the replay buffer
             action = self.init_policy()
             new_state, reward, done = self._environment.step(action)
-            done = self.expand_dims(done, 0)
             action = self.reshape(action, (1,))
             my_reward = self.select(done, self.penalty, self.reward)
             return done, reward, new_state, action, my_reward
@@ -115,7 +114,6 @@ class DQNActor(Actor):
 
             action = self.collect_policy(ts0, step_tensor)
             new_state, reward, done = self._environment.step(action)
-            done = self.expand_dims(done, 0)
             action = self.reshape(action, (1,))
             my_reward = self.select(done, self.penalty, self.reward)
             return done, reward, new_state, action, my_reward
@@ -124,7 +122,6 @@ class DQNActor(Actor):
             ts0 = self.expand_dims(params, 0)
             action = self.evaluate_policy(ts0)
             new_state, reward, done = self._eval_env.step(action)
-            done = self.expand_dims(done, 0)
             return done, reward, new_state
         self.print("Phase is incorrect")
         return 0

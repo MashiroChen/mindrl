@@ -15,7 +15,6 @@
 """DQN Trainer"""
 import mindspore as ms
 from mindspore import Parameter, Tensor
-
 from mindspore.ops import operations as P
 
 from mindspore_rl.agent import trainer
@@ -26,7 +25,7 @@ class DQNTrainer(Trainer):
     """DQN Trainer"""
 
     def __init__(self, msrl, params):
-        super(DQNTrainer, self).__init__(msrl)
+        super().__init__(msrl)
         self.zero = Tensor(0, ms.float32)
         self.squeeze = P.Squeeze()
         self.less = P.Less()

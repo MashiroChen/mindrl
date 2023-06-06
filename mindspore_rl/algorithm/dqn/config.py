@@ -19,6 +19,7 @@ import mindspore
 
 from mindspore_rl.core.uniform_replay_buffer import UniformReplayBuffer
 from mindspore_rl.environment import GymEnvironment
+from mindspore_rl.environment.batch_wrapper import BatchWrapper
 from mindspore_rl.environment.pyfunc_wrapper import PyFuncWrapper
 
 from .dqn import DQNActor, DQNLearner, DQNPolicy
@@ -60,13 +61,13 @@ algorithm_config = {
     "collect_environment": {
         "number": 1,
         "type": GymEnvironment,
-        "wrappers": [PyFuncWrapper],
+        "wrappers": [PyFuncWrapper, BatchWrapper],
         "" "params": collect_env_params,
     },
     "eval_environment": {
         "number": 1,
         "type": GymEnvironment,
-        "wrappers": [PyFuncWrapper],
+        "wrappers": [PyFuncWrapper, BatchWrapper],
         "params": eval_env_params,
     },
     "replay_buffer": {

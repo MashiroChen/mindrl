@@ -20,6 +20,7 @@ from mindspore import dtype as mstype
 
 from mindspore_rl.algorithm.dqn import config
 from mindspore_rl.core import Session
+from mindspore_rl.core.msrl import MSRL
 from mindspore_rl.utils.callback import (
     CheckpointCallback,
     EvaluateCallback,
@@ -42,15 +43,22 @@ class DQNSession(Session):
         config.algorithm_config["policy_and_network"]["params"][
             "compute_type"
         ] = compute_type
-        env = config.algorithm_config.get("collect_environment").get("type")(
-            config.collect_env_params[
-                config.algorithm_config.get("collect_environment").get("type").__name__
-            ]
+        # env = config.algorithm_config.get("collect_environment").get("type")(
+        #     config.collect_env_params[
+        #         config.algorithm_config.get("collect_environment").get("type").__name__
+        #     ]
+        # )
+        env = MSRL.create_environments(config.algorithm_config, "collect_environment")[
+            0
+        ]
+        reward_shape = (
+            (1,) if len(env.reward_space.shape) == 0 else env.reward_space.shape
         )
+        done_shape = (1,) if len(env.done_space.shape) == 0 else env.done_space.shape
         config.algorithm_config["replay_buffer"]["data_shape"] = [
             env.observation_space.shape,
-            (1,),
-            (1,),
+            reward_shape,
+            done_shape,
             env.observation_space.shape,
         ]
         config.algorithm_config["replay_buffer"]["data_type"] = [
