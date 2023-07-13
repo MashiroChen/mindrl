@@ -105,7 +105,7 @@ class EpsilonGreedyPolicy(policy.Policy):
         """
         greedy_action = self.greedy_policy(state)
         random_action = self.random_policy()
-
+        breakpoint()
         if self.decay_epsilon:
             epsi_sub = self.sub(self._epsi_high, self._epsi_low)
             epsi_exp = self.exp(self.mul(self._mins_one, self.div(step, self._decay)))

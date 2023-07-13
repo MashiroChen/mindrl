@@ -44,7 +44,7 @@ class DQNTrainer(Trainer):
         trainable_variables = {"policy_net": self.msrl.learner.policy_network}
         return trainable_variables
 
-    @ms.jit
+    # @ms.jit
     def init_training(self):
         """Initialize training"""
         state = self.msrl.collect_environment.reset()
@@ -62,12 +62,13 @@ class DQNTrainer(Trainer):
             i += 1
         return done
 
-    @ms.jit
+    # @ms.jit
     def train_one_episode(self):
         """Train one episode"""
         if not self.inited:
             self.init_training()
             self.inited = self.true
+        breakpoint()
         state = self.msrl.collect_environment.reset()
         done = self.false
         total_reward = self.zero
@@ -77,10 +78,12 @@ class DQNTrainer(Trainer):
             done, r, new_state, action, my_reward = self.msrl.agent_act(
                 trainer.COLLECT, state
             )
+            breakpoint()
             self.msrl.replay_buffer_insert([state, action, my_reward, new_state])
             state = new_state
             r = self.squeeze(r)
             loss = self.msrl.agent_learn(self.msrl.replay_buffer_sample())
+            breakpoint()
             total_reward += r
             steps += 1
             if not self.mod(steps, self.update_period):

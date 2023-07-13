@@ -40,6 +40,7 @@ class DQNPolicy:
     """DQN Policy"""
 
     def __init__(self, params):
+        breakpoint()
         self.policy_network = FullyConnectedNet(
             params["state_space_dim"],
             params["hidden_size"],
@@ -69,6 +70,7 @@ class DQNActor(Actor):
     """DQN Actor"""
 
     def __init__(self, params):
+        breakpoint()
         super().__init__()
         self.init_policy = params["init_policy"]
         self.collect_policy = params["collect_policy"]
@@ -109,6 +111,7 @@ class DQNActor(Actor):
             return done, reward, new_state, action, my_reward
         if phase == 2:
             # Experience collection
+            breakpoint()
             self.step += 1
             ts0 = self.expand_dims(params, 0)
             step_tensor = self.ones((1, 1), ms.float32) * self.step
@@ -148,6 +151,7 @@ class DQNLearner(Learner):
 
         def construct(self, x, a0, label):
             """constructor for Loss Cell"""
+            breakpoint()
             out = self._backbone(x)
             out = self.gather(out, 1, a0)
             loss = self._loss_fn(out, label)
@@ -155,6 +159,7 @@ class DQNLearner(Learner):
 
     def __init__(self, params=None):
         super().__init__()
+        breakpoint()
         self.policy_network = params["policy_network"]
         self.target_network = params["target_network"]
         self.policy_param = ParameterTuple(self.policy_network.get_parameters())
@@ -177,6 +182,7 @@ class DQNLearner(Learner):
 
     def learn(self, experience):
         """Model update"""
+        breakpoint()
         s0, a0, r1, s1 = experience
         next_state_values = self.target_network(s1)
         next_state_values = next_state_values.max(axis=1)
